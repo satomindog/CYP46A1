@@ -14,6 +14,10 @@ data <- subset(data, cells = WhichCells(data, idents = c("ct_15_12_CP","ct_15_17
                                                          ,"ct_16_23_CP","ct_16_24_CP","ct_16_25_CP",
                                                          "cv_72_CP","cv_73_CP","cv_75_CP","cv_76_CP",
                                                          "cv_78_CP","cv_90_CP","cv_91_CP")))
+#Select the samples from healty control
+Control <- subset(data, cells = WhichCells(data, idents = c("ct_15_12_CP","ct_15_17_CP","ct_16_18_CP"
+                                                            ,"ct_16_23_CP","ct_16_24_CP","ct_16_25_CP")))
+
 #Separete to each cell type
 Idents(data) <- data$cellID
 Epithelial <- subset(data, cells = WhichCells(data, idents = c("Epithelial")))
@@ -26,11 +30,26 @@ write.xlsx(DEG, col_names = TRUE,format_headers = TRUE, rowNames = TRUE, "~/DEG.
 #Plot the gene distributions
 FeaturePlot(data, features = c("CYP46A1"),pt.size = 1, order = TRUE,
             cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) ))
+FeaturePlot(data, features = c("IFNAR1","IFNAR2"),pt.size = 1, order = TRUE,
+            cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) ))
+FeaturePlot(data, features = c("IFNGR1","IFNGR2"),pt.size = 1, order = TRUE)
 #Violin plot of each cell type
 VlnPlot(data, features = c("CYP46A1"), split.by = "Biogroup")
 #Bubble plot of each cell type without scaling
-DotPlot(data, features = c("CYP7A1","CYP46A1","CYP27A1","CYP11A1","CH25H"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
-        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius", split.by = "Biogroup")
+Idents(Control) <- Control$cellID
+DotPlot(Control, features = c("CYP46A1"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+DotPlot(Control, features = c("IFNAR1","IFNAR2"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+DotPlot(Control, features = c("IFNGR1","IFNGR2")
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+DotPlot(Control, features = c("NR1H2","NR1H3"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+DotPlot(Control, features = c("TNFRSF1A","TNFRSF1B"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+Epithelial <- subset(Control, cells = WhichCells(Control, idents = c("Epithelial")))
+DotPlot(Epithelial, features = c("CYP7A1","CYP46A1","CYP27A1","CYP11A1","CH25H"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
 
 #####
 #Mouse aging snRNAseq data analysis
@@ -101,12 +120,31 @@ new.cluster.ids <- c("Epithelial", "Epithelial", "Epithelial", "Epithelial","Epi
 names(new.cluster.ids) <- levels(data)
 data <- RenameIdents(data, new.cluster.ids)
 #Plot the gene distributions
-FeaturePlot(data, features = c("Cyp46a1"),pt.size = 0.5, order = TRUE,
+FeaturePlot(data, features = c("Cyp46a1"),pt.size = 1, order = TRUE,
             cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) ))
-#Bubble plot of each cell type without scaling
-DotPlot(data, features = c("Cyp46a1"),
-        cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
-        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE)
+FeaturePlot(data, features = c("Ifnar1","Ifnar2"),pt.size = 1, order = TRUE,
+            cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) ))
+FeaturePlot(data, features = c("Ifngr1","Ifngr2"),pt.size = 1, order = TRUE)
+#Bubble plot of Adult sample
+Idents(Adult) <- Adult$seurat_clusters
+new.cluster.ids <- c("Epithelial", "Epithelial", "Epithelial", "Epithelial","Epithelial", "Mesenchymal","Epithelial",
+                     "Epithelial","Epithelial","Epithelial","Mesenchymal","Endothelial","Immune",
+                     "Neuronal/Glial","Epithelial")
+names(new.cluster.ids) <- levels(Adult)
+Adult <- RenameIdents(Adult, new.cluster.ids)
+DotPlot(Adult, features = c("Cyp46a1"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+DotPlot(Adult, features = c("Ifnar1","Ifnar2"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+DotPlot(Adult, features = c("Ifngr1","Ifngr2")
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+DotPlot(Adult, features = c("Nr1h2","Nr1h3"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+DotPlot(Adult, features = c("Tnfrsf1a","Tnfrsf1b"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
+Epithelial <- subset(Adult, cells = WhichCells(Adult, idents = c("Epithelial")))
+DotPlot(Epithelial, features = c("Cyp7a1","Cyp46a1","Cyp27a1","Cyp11a1","Ch25h"),cols = c(rgb(230,230,230,max=255), rgb(255,109,9,max=255) )
+        ,dot.min = 0,scale.min = 0,col.min=0,scale = FALSE, scale.by = "radius")
 #Violin plot of each sample
 VlnPlot(data, features = c("Cyp46a1"), split.by = "Sample")
 #Find the DEGs
@@ -283,7 +321,3 @@ dds <- DESeq(dds)
 res <- results(dds)
 res <- res[order(res$padj),]
 write.csv(res, file="~/result.csv")
-
-
-
-
