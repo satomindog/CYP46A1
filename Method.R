@@ -41,6 +41,24 @@ DEG <- FindMarkers(data, ident.1 = "Case",logfc.threshold = 0,test.use = "MAST",
                    latent.vars = c("Sex","Batch"))
 #Export to Excel file
 write.xlsx(DEG, col_names = TRUE,format_headers = TRUE, rowNames = TRUE, "~/DEG.xlsx")
+#Violin plot of each cell type
+Idents(data) <- data$cellID
+VlnPlot(data, features = c("CYP46A1"), split.by = "Biogroup")
+
+#Load the data form Human brain
+data <- readRDS(file = "~/brain_COVID.rds")
+#Chose the "RNA" assay
+DefaultAssay(data) <- "RNA" 
+#Exclude the cells from a flu patient
+Idents(data) <- data$orig.ident
+table(data$orig.ident)
+data <- subset(data, cells = WhichCells(data, idents = c("ct_01_01", "ct_01_07", "ct_02_01", "ct_02_11",
+                                                         "ct_03_03", "ct_03_09", "ct_04_09",  "cv_71",
+                                                         "cv_72", "cv_73", "cv_75", "cv_76", "cv_78",
+                                                         "cv_90", "cv_91")))
+#Violin plot of each cell type
+Idents(data) <- data$cellID
+VlnPlot(data, features = c("CYP46A1"), split.by = "Biogroup")
 
 #####
 #Mouse aging snRNAseq data analysis
