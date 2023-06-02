@@ -90,6 +90,15 @@ sapply(X = strsplit(colnames(data), split = "_"), FUN = "[", 1)
 new.cluster.ids <- sapply(X = strsplit(colnames(data), split = "_"), FUN = "[", 1)
 data <- AddMetaData(object = data,metadata = new.cluster.ids,col.name = 'Sample')
 head(x = data[[]])
+#checked the cell number
+table(data$Sample)
+#Adult  Aged 
+#36353 32128 
+#down sampling the cells
+data <- subset(data, downsample = 12052)
+table(data$Sample)
+#Adult  Aged 
+#12052 12052  
 #Removing low-quality cells
 data.genes <- grep(pattern = "^mt-", x = rownames(GetAssayData(data)), value = TRUE)
 data[["percent.mt"]] <- PercentageFeatureSet(data, pattern = "^mt-")
